@@ -30,26 +30,14 @@ def replace_in_dir(path, filetype, licensetext):
     
 def replace_in_file(filename, licensetext):
   #print "INFO: Processing file: " + filename
-  # detect file encoding
-  dataf = open(filename, 'r')
-  data = dataf.read()
-  dataf.close()
-  result = chardet.detect(data)
-  charenc = result['encoding']
-  if charenc == "UTF-8":
-    charenc = "utf-8-sig"
-  
   # open the file for reading
-  FILE = codecs.open(filename, 'r', charenc)
-  if FILE.encoding == None:
-    print "ERROR: could not open file: " + filename
-    return
+  FILE = open(filename, 'r')
   contents = FILE.read()
   FILE.close()
 
   m = REGEX.search(contents)
   if m == None or type(m) is NoneType:
-    print "WARNING: did not find match in: " + filename + " enc: " + charenc
+    print "WARNING: did not find match in: " + filename
     FILE.close()
     return;
   
@@ -57,7 +45,7 @@ def replace_in_file(filename, licensetext):
   contents_updated = contents.replace(m.group(0), licensetext);
   
   # Overwrite the file
-  FILEW = codecs.open(filename, 'w', charenc)
+  FILEW = open(filename, 'w')
   FILEW.seek(0)
   FILEW.write(contents_updated)
   FILEW.close()
