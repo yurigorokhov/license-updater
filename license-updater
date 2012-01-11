@@ -12,7 +12,7 @@ def print_help():
   
 def read_license_file(filename):
   FILE = open(filename, "r")
-  return FILE.read()
+  return FILE.read().strip()
   FILE.close()
   
  
