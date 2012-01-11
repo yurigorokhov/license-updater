@@ -1,6 +1,8 @@
-Usage: ./license-updater directory filetype newlicense
+Usage: ./license-updater directory filetype newlicense [--dry] [--add]
 WARNING: Backup your project first and check your source code after running this script
 
 example: ./license-updater /home/user/project *.php license.txt
+option --dry: do not actually write to any files
+option --add: add license where it is not found
 
 This will replace all FIRST occurences of "/* LICENSE-TEXT */" in every file of your project directory

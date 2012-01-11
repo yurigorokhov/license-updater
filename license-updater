@@ -1,12 +1,14 @@
 #!/usr/bin/python
 
-import re, sys, os, glob, fnmatch, codecs, chardet
+import re, sys, os, glob, fnmatch, codecs, chardet, string
 from types import *
 
 REGEX = re.compile('/\*(.|[\r\n]|\n)*?\*/')
+addmissing = False
+dryrun = False
 
 def print_help():
-  print """ Usage: ./license-updater directory filetype newlicense [--dryrun]
+  print """ Usage: ./license-updater directory filetype newlicense [--dry --add]
   example: ./license-updater /home/user/project *.php license.txt"""
   exit()
   
@@ -18,7 +20,7 @@ def read_license_file(filename):
  
 def replace_in_dir(path, filetype, licensetext):
   if(os.path.isdir(path) == False):
-    if fnmatch.fnmatch(fp, filetype):
+    if fnmatch.fnmatch(path, filetype):
       replace_in_file(path, licensetext)
     return 
   for f in os.listdir(path):
@@ -29,6 +31,9 @@ def replace_in_dir(path, filetype, licensetext):
       replace_in_file(fp, licensetext)
     
 def replace_in_file(filename, licensetext):
+  global dryrun
+  global REGEX
+  global addmissing
   #print "INFO: Processing file: " + filename
   # open the file for reading
   FILE = open(filename, 'rb')
@@ -38,22 +43,43 @@ def replace_in_file(filename, licensetext):
   m = REGEX.search(contents)
   if m == None or type(m) is NoneType:
     print "WARNING: did not find match in: " + filename
-    contents_updated = licensetext + '\r\n\r\n' + contents
+    if addmissing:
+      specialchars = '';
+      i = 0
+      for c in contents:
+	if set(c).issubset(string.printable):
+	  break
+	else:
+	  specialchars += c
+	  i += 1
+      contents = contents[i:]
+      contents_updated = specialchars + licensetext + '\r\n\r\n' + contents
+    else:
+      contents_updated = contents
   else: 
     contents_updated = contents.replace(m.group(0), licensetext);
   
   # Overwrite the file
-  FILEW = open(filename, 'wb')
-  FILEW.seek(0)
-  FILEW.write(contents_updated)
-  FILEW.close()
+  if not dryrun:
+    FILEW = open(filename, 'wb')
+    FILEW.seek(0)
+    FILEW.write(contents_updated)
+    FILEW.close()
+  else:
+    print "DRYRUN: Writing to file: " + filename
   
 def main():
+  global dryrun
+  global addmissing
   if len(sys.argv) < 3:
     print_help()
   directory = sys.argv[1];
   filetype = sys.argv[2];
   licensetext = read_license_file(sys.argv[3])
+  if len(sys.argv) == 5 and sys.argv[4] == "--add" or (len(sys.argv) == 6 and sys.argv[5] == "--add"):
+    addmissing = True
+  if len(sys.argv) == 5 and sys.argv[4] == "--dry" or (len(sys.argv) == 6 and sys.argv[5] == "--dry"):
+    dryrun = True
   replace_in_dir(directory, filetype, licensetext)
 
 if __name__ == "__main__":
