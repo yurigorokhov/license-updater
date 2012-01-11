@@ -1,0 +1,5 @@
+Usage: ./license-updater directory filetype newlicense
+
+example: ./license-updater /home/user/project *.php license.txt
+
+This will replace all FIRST occurences of "/* LICENSE-TEXT */" in every file of your project directory
