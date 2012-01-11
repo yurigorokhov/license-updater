@@ -1,4 +1,5 @@
 Usage: ./license-updater directory filetype newlicense
+WARNING: Backup your project first and check your source code after running this script
 
 example: ./license-updater /home/user/project *.php license.txt
 

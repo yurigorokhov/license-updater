@@ -6,13 +6,13 @@ from types import *
 REGEX = re.compile('/\*(.|[\r\n]|\n)*?\*/')
 
 def print_help():
-  print """ Usage: ./license-updater directory filetype newlicense
+  print """ Usage: ./license-updater directory filetype newlicense [--dryrun]
   example: ./license-updater /home/user/project *.php license.txt"""
   exit()
   
 def read_license_file(filename):
   FILE = open(filename, "r")
-  return filename.read()
+  return FILE.read()
   FILE.close()
   
  
@@ -63,7 +63,7 @@ def replace_in_file(filename, licensetext):
   FILEW.close()
   
 def main():
-  if len(sys.argv) != 3:
+  if len(sys.argv) < 3:
     print_help()
   directory = sys.argv[1];
   filetype = sys.argv[2];
