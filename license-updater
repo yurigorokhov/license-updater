@@ -11,7 +11,7 @@ def print_help():
   exit()
   
 def read_license_file(filename):
-  FILE = open(filename, "r")
+  FILE = open(filename, "rb")
   return FILE.read().strip()
   FILE.close()
   
@@ -31,21 +31,19 @@ def replace_in_dir(path, filetype, licensetext):
 def replace_in_file(filename, licensetext):
   #print "INFO: Processing file: " + filename
   # open the file for reading
-  FILE = open(filename, 'r')
+  FILE = open(filename, 'rb')
   contents = FILE.read()
   FILE.close()
 
   m = REGEX.search(contents)
   if m == None or type(m) is NoneType:
     print "WARNING: did not find match in: " + filename
-    FILE.close()
-    return;
-  
-  # Update the contents
-  contents_updated = contents.replace(m.group(0), licensetext);
+    contents_updated = licensetext + '\r\n\r\n' + contents
+  else: 
+    contents_updated = contents.replace(m.group(0), licensetext);
   
   # Overwrite the file
-  FILEW = open(filename, 'w')
+  FILEW = open(filename, 'wb')
   FILEW.seek(0)
   FILEW.write(contents_updated)
   FILEW.close()
